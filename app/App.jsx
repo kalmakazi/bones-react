@@ -12,12 +12,14 @@ link.rel = 'shortcut icon';
 link.href = favicon;
 document.getElementsByTagName('head')[0].appendChild(link);
 
-const App = React.createClass({
+export default class App extends React.Component {
+  static propTypes = {
+    test: React.PropTypes.bool,
+  }
+
   render() {
     return (
       <h1>Boomshakalaka</h1>
     );
-  },
-});
-
-export default App;
+  }
+}
