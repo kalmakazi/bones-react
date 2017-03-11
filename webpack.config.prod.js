@@ -15,26 +15,19 @@ module.exports = {
 
   resolve: {
     extensions: [
-      '',
       '.js',
       '.jsx',
     ],
   },
 
   plugins: [
-    new ExtractTextPlugin('css-[hash].css'),
+    new ExtractTextPlugin({filename: 'css-[hash].css'}),
     new webpack.DefinePlugin({
       'process.env': {
         'NODE_ENV': JSON.stringify('production')
       }
     }),
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false
-      }
-    }),
-    new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.optimize.DedupePlugin(),
+    new webpack.optimize.UglifyJsPlugin(),
     new HtmlWebpackPlugin({
       inject: 'body',
       template: 'index.html',
@@ -42,21 +35,23 @@ module.exports = {
   ],
 
   module: {
-    loaders: [
+    rules: [
       {
-        loader: 'html',
         test: /\.html$/,
+        loader: 'html-loader',
       },
 
       {
         test: /\.jsx?$/,
-        loaders: ['babel'],
-        include: path.join(__dirname, 'app')
+        include: path.join(__dirname, 'app'),
+        loader: 'babel-loader',
       },
 
       {
         test: /\.s?css$/,
-        loader: ExtractTextPlugin.extract(combineLoaders([
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [
             {
               loader: 'css-loader',
               query: {
@@ -70,18 +65,18 @@ module.exports = {
             {
               loader: 'postcss-loader',
             },
-        ]))
+          ],
+        }),
       },
 
       {
-        include: path.join(__dirname, 'app'),
-        loader:'file-loader?name=img/[path][name].[ext]',
         test: /\.(jpg|jpeg|gif|png|ico)$/,
+        include: path.join(__dirname, 'app'),
+        loader:'file-loader',
+        options: {
+          name: 'img/[path][name].[ext]'
+        },
       },
     ],
   },
-
-  postcss: [
-    autoprefixer({browsers: ['last 2 versions']}),
-  ],
 };

@@ -13,7 +13,6 @@ module.exports = {
 
   resolve: {
     extensions: [
-      '',
       '.js',
       '.jsx',
     ],
@@ -33,27 +32,34 @@ module.exports = {
   ],
 
   module: {
-    loaders: [
+    rules: [
       {
-        loader: 'html',
         test: /\.html$/,
+        loader: 'html-loader',
       },
 
       {
-        include: path.join(__dirname, 'app'),
-        loaders: ['react-hot', 'babel'],
         test: /\.jsx?$/,
+        include: path.join(__dirname, 'app'),
+        use: [
+          {
+            loader: 'react-hot-loader',
+          },
+          {
+            loader: 'babel-loader',
+          },
+        ],
       },
 
       {
         test: /\.s?css$/,
-        loader: combineLoaders([
+        use: [
           {
             loader: 'style-loader'
           },
           {
             loader: 'css-loader',
-            query: {
+            options: {
               localIdentName: '[name]__[local]___[hash:base64:5]',
               modules: true,
             },
@@ -64,18 +70,17 @@ module.exports = {
           {
             loader: 'postcss-loader',
           },
-        ]),
+        ],
       },
 
       {
-        include: path.join(__dirname, 'app'),
-        loader:'file-loader?name=img/[path][name].[ext]',
         test: /\.(jpg|jpeg|gif|png|ico)$/,
+        include: path.join(__dirname, 'app'),
+        loader:'file-loader',
+        options: {
+          name: 'img/[path][name].[ext]'
+        },
       },
     ],
   },
-
-  postcss: [
-    autoprefixer({browsers: ['last 2 versions']}),
-  ],
 };
